@@ -6,7 +6,6 @@
 <title>Study Desk · Homework &amp; Revision Planner</title>
 <meta name="description" content="A daily planner for homework and revision, organised by due date.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232b4a72'/%3E%3Cpath d='M9 11h14M9 17h9' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M14 24l3 3 6-7' stroke='%23e0b069' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232b4a72'/%3E%3Cpath d='M9 11h14M9 17h9' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M14 24l3 3 6-7' stroke='%23e0b069' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 /* ============ tokens ============ */
 :root{
@@ -293,6 +292,89 @@ button{font-family:inherit}
 .task-actions .icon-btn{width:34px;height:34px}
 .task-actions .icon-btn svg{width:15px;height:15px}
 
+/* ============ revision timer card ============ */
+.task.stage-planned{
+  align-items:start;
+  grid-template-columns:minmax(0,1fr) auto;
+}
+.task.stage-planned .task-actions{align-self:start}
+.task.timer-over{border-left-color:var(--warn)}
+.timer-panel{
+  grid-column:1 / -1;
+  margin-top:2px;padding-top:12px;
+  border-top:1px dashed var(--line);
+  display:flex;flex-direction:column;gap:9px;
+  min-width:0;
+}
+.timer-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.timer-label{
+  font-size:11.5px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink-2);
+}
+.timer-state{
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);border:1px solid var(--line);border-radius:5px;padding:2px 7px;
+}
+.timer-state.live{
+  color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);
+  background:color-mix(in srgb,var(--accent) 9%,transparent);
+}
+.timer-state.over{
+  color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent);
+  background:var(--warn-bg);
+}
+.clock{
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:38px;line-height:1;letter-spacing:-.02em;font-weight:600;color:var(--ink);
+}
+.clock.over{color:var(--warn)}
+.clock small{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-3);margin-left:8px}
+.timer-sub{font-size:11.5px;color:var(--ink-3)}
+.bar{
+  height:5px;border-radius:999px;background:var(--bg-2);
+  border:1px solid var(--line);overflow:hidden;
+}
+.bar > i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s linear}
+.bar.over > i{background:var(--warn)}
+.timer-actions{display:flex;gap:7px;flex-wrap:wrap}
+.timer-actions .btn{min-height:38px;font-size:13px;padding:0 14px}
+.period-dots{display:flex;gap:6px;flex-wrap:wrap}
+.period-dot{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:10.5px;font-weight:600;
+  padding:3px 7px;border-radius:6px;border:1px solid var(--line);
+  color:var(--ink-3);background:transparent;white-space:nowrap;
+}
+.period-dot.done{
+  color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,transparent);background:var(--ok-bg);
+}
+.period-dot.now{
+  color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);
+  background:color-mix(in srgb,var(--accent) 10%,transparent);
+}
+
+/* running timer strip */
+.running-bar{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 14px;
+  background:color-mix(in srgb,var(--accent) 10%, var(--card));
+  border-bottom:1px solid var(--line);
+  font-size:12.5px;
+}
+.running-bar[hidden]{display:none}
+.pulse{
+  width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;
+  animation:pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+.rb-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rb-text b{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
+.rb-btn{
+  border:1px solid var(--line-2);background:var(--card);color:var(--ink);
+  border-radius:7px;font-size:11px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;padding:5px 10px;cursor:pointer;white-space:nowrap;
+}
+
 /* empty */
 .empty{
   display:flex;flex-direction:column;align-items:center;gap:10px;
@@ -382,6 +464,42 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
 .sheet-foot .btn{flex:1}
 .sheet-note{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin-top:10px}
 
+/* ============ revision plan editor ============ */
+.pages-row{display:flex;align-items:center;gap:10px}
+.pages-row input{
+  width:96px;text-align:center;font-family:var(--mono);font-size:19px;font-weight:600;
+}
+.pages-row .unit{font-size:12px;color:var(--ink-3)}
+.plan-hint{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin-top:6px}
+.period-row{
+  padding:10px;border:1px solid var(--line);border-radius:11px;
+  background:var(--bg-2);margin-bottom:8px;
+}
+.period-row-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.period-name{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.period-time{font-size:11px;color:var(--ink-3);font-family:var(--mono)}
+.period-chips{display:flex;gap:6px}
+.period-chips .chip-sel{min-height:38px;min-width:0;flex:1;font-size:12.5px;padding:0 6px}
+.period-chips .chip-sel.on{background:var(--accent);color:var(--accent-ink)}
+.sum-line{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  padding:9px 11px;border-radius:9px;font-family:var(--mono);font-size:12px;
+  background:var(--bg-2);border:1px solid var(--line);color:var(--ink-2);
+  margin-bottom:8px;
+}
+.sum-line.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,transparent);background:var(--ok-bg)}
+.sum-line.bad{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,transparent);background:var(--warn-bg)}
+.plan-total{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--ink-3);margin-bottom:13px}
+.plan-add{display:flex;gap:8px;margin-bottom:13px}
+.plan-add .btn{flex:1}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.period-dot svg{width:10px;height:10px}
+.task.flash{animation:flashcard 1.5s ease 1}
+@keyframes flashcard{
+  0%,100%{box-shadow:var(--shadow)}
+  45%{box-shadow:0 0 0 2px color-mix(in srgb,var(--warn) 45%,transparent),0 10px 26px rgba(0,0,0,.14)}
+}
+
 /* toast */
 .toast{
   position:fixed;left:50%;bottom:18px;z-index:80;
@@ -457,7 +575,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
       </svg>
       <div class="brand-text">
         <strong>Study Desk</strong>
-        <span class="ver">V 1.0</span>
+        <span class="ver">V 2.0</span>
       </div>
     </div>
 
@@ -493,6 +611,12 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
       </button>
     </div>
   </header>
+
+  <div class="running-bar" id="runningBar" hidden>
+    <span class="pulse" aria-hidden="true"></span>
+    <span class="rb-text" id="rbText"></span>
+    <button type="button" class="rb-btn" id="rbGo">Open timer</button>
+  </div>
 
   <!-- ================= layout ================= -->
   <div class="layout" id="layout">
@@ -634,7 +758,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
   </div>
 
   <footer class="foot">
-    <span>Study Desk · V 1.0 · Saved on this device</span>
+    <span>Study Desk · V 2.0 · Saved on this device</span>
     <span><span class="kbd">N</span> new item · <span class="kbd">Esc</span> close</span>
   </footer>
 </div>
@@ -652,6 +776,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
   var HW_SUBJECTS = ['Chinese','English / ER','Mathematics','C. E. S.','I. S.','Geography','Chinese History','History','V. A','Music','Putonghua','Others'];
   var RV_SUBJECTS = ['C1','C2','C3','G','I','H'];
   var DIFFS = ['a','b','c','c+'];
+  var PLAN_MIN_PAGES = 2, PLAN_MAX_PAGES = 12, PLAN_MAX_PERIODS = 3;
 
   var HW_COLORS = {
     'Chinese':'#a05a3f','English / ER':'#3f6f8a','Mathematics':'#3c6a4e',
@@ -740,10 +865,12 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
       if (!it.name) it.name = 'Untitled homework';
       if (HW_SUBJECTS.indexOf(it.subject) < 0) it.subject = 'Others';
     } else {
-      it.stage = (it.stage === 'written' || it.stage === 'archived') ? it.stage : 'open';
+      it.stage = (it.stage === 'planned' || it.stage === 'archived') ? it.stage : 'open';
       if (RV_SUBJECTS.indexOf(it.sub) < 0) it.sub = 'C1';
       if (DIFFS.indexOf(it.diff) < 0) it.diff = 'b';
       it.ex = String(it.ex || '0.0');
+      if (it.stage === 'archived') validPlan(it.plan, it.sub);
+      else if (it.stage === 'planned' && !validPlan(it.plan, it.sub)) { it.stage = 'open'; it.plan = null; }
     }
     if (!it.created) it.created = Date.now();
     return true;
@@ -789,6 +916,68 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
   function displayName(mode, it){ return mode === 'homework' ? it.name : rvName(it); }
   function colorOf(mode, it){ return mode === 'homework' ? (HW_COLORS[it.subject] || '#6b6b6b') : (RV_COLORS[it.sub] || '#6b6b6b'); }
 
+  /* --- revision timing rules --- */
+  function minutesFor(sub, pages){
+    var longBlock = (sub === 'C1' || sub === 'C2' || sub === 'C3');
+    if (pages <= 2) return 30;
+    if (pages === 3) return longBlock ? 45 : 40;
+    return longBlock ? 60 : 50;
+  }
+  function fmtMins(m){
+    m = Math.round(m || 0);
+    if (m < 60) return m + ' min';
+    var h = Math.floor(m / 60), r = m % 60;
+    return r ? h + ' h ' + r + ' min' : h + ' h';
+  }
+  function clockText(ms){
+    var abs = Math.abs(Math.floor(ms / 1000));
+    var m = Math.floor(abs / 60), sec = abs % 60;
+    return (ms < 0 ? '+' : '') + pad(m) + ':' + pad(sec);
+  }
+  function autoSplit(total, count){
+    var minC = Math.ceil(total / 4);
+    var maxC = Math.min(PLAN_MAX_PERIODS, Math.floor(total / 2));
+    if (minC > maxC) minC = maxC;
+    count = Math.max(minC, Math.min(maxC, count || minC));
+    var base = Math.floor(total / count), rem = total % count, out = [];
+    for (var i = 0; i < count; i++) out.push(base + (i < rem ? 1 : 0));
+    return out;
+  }
+  function validPlan(plan, sub){
+    if (!plan || !Array.isArray(plan.periods) || !plan.periods.length) return false;
+    var ok = true, pages = 0;
+    plan.periods.forEach(function(pp){
+      if (!pp || typeof pp.pages !== 'number' || pp.pages < 1 || pp.pages > 4) { ok = false; return; }
+      pp.pages = Math.round(pp.pages);
+      pp.minutes = (typeof pp.minutes === 'number' && pp.minutes > 0) ? pp.minutes : minutesFor(sub, pp.pages);
+      pp.elapsed = (typeof pp.elapsed === 'number' && pp.elapsed >= 0) ? pp.elapsed : 0;
+      pp.startedAt = (typeof pp.startedAt === 'number') ? pp.startedAt : null;
+      pp.done = !!pp.done;
+      pages += pp.pages;
+    });
+    if (!ok) return false;
+    plan.pages = pages;
+    return true;
+  }
+  function currentPeriod(it){
+    if (!it || !it.plan) return null;
+    for (var i = 0; i < it.plan.periods.length; i++) {
+      if (!it.plan.periods[i].done) return it.plan.periods[i];
+    }
+    return null;
+  }
+  function elapsedOf(pp, now){
+    now = now || Date.now();
+    return (pp.elapsed || 0) + (pp.startedAt ? Math.max(0, now - pp.startedAt) : 0);
+  }
+  function studiedMs(it){
+    if (!it.plan) return 0;
+    var t = 0;
+    it.plan.periods.forEach(function(pp){ t += elapsedOf(pp); });
+    return t;
+  }
+  function isFinishedStage(st){ return st === 'packed' || st === 'written' || st === 'archived'; }
+
   /* ================= render ================= */
   function render(){
     renderTop();
@@ -812,6 +1001,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
     var s = $('#searchInput');
     s.placeholder = state.mode === 'homework' ? 'Search homework or subject' : 'Search revision or subject';
     if (document.activeElement !== s) s.value = state.q;
+    renderRunningBar();
   }
 
   function renderCal(){
@@ -868,12 +1058,17 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
     $('#dayEyebrow').classList.toggle('warn', over > 0);
     $('#dayTitle').textContent = fmtLong(date);
 
+    var planned = all.filter(function(it){ return it.stage === 'planned'; }).length;
+    var finished = all.length - open - planned;
     var meta;
     if (!all.length) meta = 'Nothing due — a free page.';
     else {
-      meta = all.length + (all.length === 1 ? ' item' : ' items') + ' · ' + open + ' pending';
-      if (all.length - open) meta += ' · ' + (all.length - open) + ' finished';
-      if (over) meta += ' · ' + over + ' overdue';
+      var parts = [all.length + (all.length === 1 ? ' item' : ' items')];
+      if (open) parts.push(open + ' pending');
+      if (planned) parts.push(planned + ' in progress');
+      if (finished) parts.push(finished + ' finished');
+      if (over) parts.push(over + ' overdue');
+      meta = parts.join(' · ');
     }
     $('#dayMeta').textContent = meta;
 
@@ -891,7 +1086,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
 
     var arr = all.filter(function(it){
       if (state.status === 'open' && it.stage !== 'open') return false;
-      if (state.status === 'done' && it.stage === 'open') return false;
+      if (state.status === 'done' && !isFinishedStage(it.stage)) return false;
       if (!q) return true;
       var hay = displayName(mode, it) + ' ' + (it.subject || '') + ' ' + (it.sub || '') + ' ' + (it.ex || '');
       return hay.toLowerCase().indexOf(q) >= 0;
@@ -921,6 +1116,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
   }
 
   function cardHTML(it, mode){
+    if (mode === 'revise' && it.stage === 'planned' && it.plan) return timerCardHTML(it);
     var color = colorOf(mode, it);
     var stage = it.stage;
     var done = stage !== 'open';
@@ -1004,7 +1200,9 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
       var name = displayName(mode, it);
       var sub = mode === 'homework'
         ? 'Due ' + fmtShort(it.due) + ' · filed ' + fmtTime(it.archivedAt)
-        : esc(it.sub) + ' · difficulty ' + esc(it.diff) + ' · due ' + fmtShort(it.due) + ' · filed ' + fmtTime(it.archivedAt);
+        : esc(it.sub) + ' · difficulty ' + esc(it.diff) +
+          (it.plan ? ' · ' + it.plan.pages + ' pages · ' + fmtMins(studiedMs(it) / 60000) + ' studied' : '') +
+          ' · due ' + fmtShort(it.due) + ' · filed ' + fmtTime(it.archivedAt);
 
       html += '<div class="hist-row" style="--c:' + color + '">' +
           '<div class="task-main">' +
@@ -1066,14 +1264,17 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
     var it = findById(items(mode), id);
     if (!it) return;
 
+    if (mode === 'revise') {
+      if (it.stage === 'open') openPlanModal(id);
+      return;
+    }
+
     if (it.stage === 'open') {
-      it.stage = mode === 'homework' ? 'packed' : 'written';
+      it.stage = 'packed';
       it.packedAt = Date.now();
       save();
       render();
-      toast(mode === 'homework'
-        ? 'Packed. Tap Packed again to file it into History.'
-        : 'Written. Tap Done again when you have finished the revision.');
+      toast('Packed. Tap Packed again to file it into History.');
       return;
     }
 
@@ -1109,7 +1310,15 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
     var mode = state.mode;
     var it = findById(items(mode), id);
     if (!it) return;
-    it.stage = mode === 'homework' ? 'packed' : 'written';
+    if (mode === 'homework') {
+      it.stage = 'packed';
+    } else if (it.plan) {
+      var last = it.plan.periods[it.plan.periods.length - 1];
+      if (last) { last.done = false; last.startedAt = null; }
+      it.stage = 'planned';
+    } else {
+      it.stage = 'open';
+    }
     it.archivedAt = null;
     state.sel[mode] = it.due;
     state.calMonth = it.due.slice(0, 7);
@@ -1136,7 +1345,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
     });
     if (mount) mount($('#modalRoot'));
     setTimeout(function(){
-      var f = $('#modalRoot').querySelector('input[type="text"],input[type="date"],.chip-sel');
+      var f = $('#modalRoot').querySelector('input[type="text"],input[type="date"],input[type="number"],.chip-sel');
       if (f) { try { f.focus(); if (f.select && f.tagName === 'INPUT') f.select(); } catch (e) {} }
     }, 90);
   }
@@ -1284,6 +1493,10 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
             editing.diff = diff;
             editing.ex = exV;
             editing.due = dueV;
+            if (editing.plan) {
+              var anyStarted = editing.plan.periods.some(function(pp){ return pp.done || pp.elapsed > 0 || pp.startedAt; });
+              if (!anyStarted) editing.plan.periods.forEach(function(pp){ pp.minutes = minutesFor(sub, pp.pages); });
+            }
             toast('Revision updated.');
           } else {
             state.rv.push({
@@ -1302,6 +1515,413 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
       }
     );
   }
+
+
+  /* ================= revision plan editor ================= */
+  function openPlanModal(id){
+    var it = findById(state.rv, id);
+    if (!it) return;
+
+    var started = it.plan && it.plan.periods.some(function(pp){ return pp.done || pp.elapsed > 0 || pp.startedAt; });
+    if (started) { toast('This timer has already started. Finish the periods to file it.'); return; }
+
+    var total = it.plan ? it.plan.pages : 4;
+    var chunks = it.plan ? it.plan.periods.map(function(pp){ return pp.pages; }) : autoSplit(4, 2);
+
+    openModal(
+      '<div class="sheet-head"><h2>Plan this revision</h2>' +
+        '<button type="button" class="icon-btn" data-close aria-label="Close">' + I_X + '</button></div>' +
+      '<div class="preview"><span>Card</span><b>' + esc(rvName(it)) + '</b></div>' +
+      '<div class="field"><span>No. of pages</span>' +
+        '<div class="pages-row"><input type="number" id="fPages" min="' + PLAN_MIN_PAGES + '" max="' + PLAN_MAX_PAGES + '" step="1" value="' + total + '"><span class="unit">pages in total</span></div>' +
+        '<p class="plan-hint">2–12 pages. A period covers 2, 3 or 4 pages, and all periods must add up to this number.</p>' +
+      '</div>' +
+      '<div class="field"><span>Periods</span><div id="planRows"></div></div>' +
+      '<div class="sum-line" id="sumLine"></div>' +
+      '<div class="plan-total"><span id="planTotal"></span><span>' +
+        (['C1','C2','C3'].indexOf(it.sub) >= 0 ? '3 pages = 45 min · 4 pages = 60 min' : '3 pages = 40 min · 4 pages = 50 min') +
+      '</span></div>' +
+      '<div class="plan-add"><button type="button" class="btn ghost sm" id="addPeriod">+ Add period</button>' +
+        '<button type="button" class="btn ghost sm" id="removePeriod">− Remove last</button>' +
+        '<button type="button" class="btn ghost sm" id="autoPeriod">Auto split</button></div>' +
+      '<p class="form-error" id="planErr" hidden></p>' +
+      '<div class="sheet-foot"><button type="button" class="btn ghost" data-close>Cancel</button>' +
+        '<button type="button" class="btn primary" id="planGo">Done</button></div>',
+      function(root){
+        var pagesInput = root.querySelector('#fPages');
+        var rowsBox = root.querySelector('#planRows');
+        var sumLine = root.querySelector('#sumLine');
+        var totalEl = root.querySelector('#planTotal');
+        var go = root.querySelector('#planGo');
+        var errEl = root.querySelector('#planErr');
+        var addBtn = root.querySelector('#addPeriod');
+        var rmBtn = root.querySelector('#removePeriod');
+
+        function totalNow(){
+          var v = parseInt(pagesInput.value, 10);
+          return isNaN(v) ? 0 : v;
+        }
+        function sumNow(){ return chunks.reduce(function(a, b){ return a + b; }, 0); }
+
+        function paint(){
+          rowsBox.innerHTML = chunks.map(function(pg, i){
+            var chips = [2, 3, 4].map(function(n){
+              return '<button type="button" class="chip-sel' + (n === pg ? ' on' : '') + '" data-row="' + i + '" data-pages="' + n + '">' + n + ' pages</button>';
+            }).join('');
+            return '<div class="period-row"><div class="period-row-top">' +
+              '<span class="period-name">Period ' + (i + 1) + '</span>' +
+              '<span class="period-time">' + minutesFor(it.sub, pg) + ' min</span></div>' +
+              '<div class="period-chips">' + chips + '</div></div>';
+          }).join('');
+
+          var t = totalNow();
+          var sum = sumNow();
+          var ok = (t >= PLAN_MIN_PAGES && t <= PLAN_MAX_PAGES) && sum === t;
+          var note;
+          if (t < PLAN_MIN_PAGES || t > PLAN_MAX_PAGES) note = 'Total must be 2–12 pages';
+          else if (sum === t) note = 'Matches ' + t;
+          else if (sum < t) note = 'Add ' + (t - sum) + ' more';
+          else note = 'Remove ' + (sum - t);
+
+          sumLine.className = 'sum-line ' + (ok ? 'ok' : 'bad');
+          sumLine.innerHTML = '<span>Pages: ' + chunks.join(' + ') + ' = ' + sum + '</span><span>' + note + '</span>';
+
+          var totalMin = chunks.reduce(function(a, pg){ return a + minutesFor(it.sub, pg); }, 0);
+          totalEl.textContent = 'Total revision time ' + fmtMins(totalMin);
+
+          go.disabled = !ok;
+          addBtn.disabled = !(t >= PLAN_MIN_PAGES && chunks.length < Math.min(PLAN_MAX_PERIODS, Math.floor(t / 2)));
+          rmBtn.disabled = chunks.length <= 1;
+        }
+
+        pagesInput.addEventListener('input', function(){
+          var t = totalNow();
+          if (t >= PLAN_MIN_PAGES && t <= PLAN_MAX_PAGES) chunks = autoSplit(t, chunks.length);
+          paint();
+        });
+
+        rowsBox.addEventListener('click', function(e){
+          var b = e.target.closest('[data-row]');
+          if (!b) return;
+          chunks[+b.getAttribute('data-row')] = +b.getAttribute('data-pages');
+          paint();
+        });
+
+        addBtn.addEventListener('click', function(){
+          var t = totalNow();
+          if (t < PLAN_MIN_PAGES || t > PLAN_MAX_PAGES) return;
+          if (chunks.length >= Math.min(PLAN_MAX_PERIODS, Math.floor(t / 2))) return;
+          chunks = autoSplit(t, chunks.length + 1);
+          paint();
+        });
+
+        rmBtn.addEventListener('click', function(){
+          var t = totalNow();
+          if (t < PLAN_MIN_PAGES || t > PLAN_MAX_PAGES) return;
+          if (chunks.length <= 1) return;
+          chunks = autoSplit(t, chunks.length - 1);
+          paint();
+        });
+
+        root.querySelector('#autoPeriod').addEventListener('click', function(){
+          var t = totalNow();
+          if (t < PLAN_MIN_PAGES || t > PLAN_MAX_PAGES) return;
+          chunks = autoSplit(t, chunks.length);
+          paint();
+        });
+
+        go.addEventListener('click', function(){
+          var t = totalNow();
+          if (t < PLAN_MIN_PAGES || t > PLAN_MAX_PAGES) { errEl.textContent = 'Total pages must be between 2 and 12.'; errEl.hidden = false; return; }
+          var sum = sumNow();
+          if (sum !== t) { errEl.textContent = 'The periods add up to ' + sum + ' pages, but the total is ' + t + '. Adjust a period first.'; errEl.hidden = false; return; }
+
+          it.plan = {
+            pages: t,
+            periods: chunks.map(function(pg){
+              return { pages: pg, minutes: minutesFor(it.sub, pg), elapsed: 0, startedAt: null, done: false };
+            })
+          };
+          it.stage = 'planned';
+          it.plannedAt = Date.now();
+          if (!it.packedAt) it.packedAt = Date.now();
+          state.sel.revise = it.due;
+          state.calMonth = it.due.slice(0, 7);
+          state.view = 'day';
+          state.status = 'all';
+          state.q = '';
+          save();
+          closeModal();
+          render();
+          toast('Period 1 is ready — ' + chunks[0] + ' pages, ' + minutesFor(it.sub, chunks[0]) + ' min. Press Start when you begin.');
+        });
+
+        paint();
+      }
+    );
+  }
+
+  /* ================= revision timer card ================= */
+  function timerCardHTML(it){
+    var plan = it.plan;
+    var colour = colorOf('revise', it);
+    var p = currentPeriod(it);
+
+    if (!p) {
+      return '<article class="task stage-planned" style="--c:' + colour + '">' +
+        '<div class="task-main"><div class="task-line"><span class="chip">' + esc(it.sub) + '</span>' +
+          '<span class="flag ok">All periods done</span></div>' +
+          '<h3 class="task-name mono">' + esc(rvName(it)) + '</h3>' +
+          '<div class="task-sub">Stop the last period to file this into History.</div></div></article>';
+    }
+
+    var idx = plan.periods.indexOf(p);
+    var el = elapsedOf(p);
+    var totalMs = p.minutes * 60000;
+    var left = totalMs - el;
+    var over = left <= 0;
+    var running = !!p.startedAt;
+    var started = running || el > 0;
+    var doneCount = plan.periods.filter(function(x){ return x.done; }).length;
+    var isLast = idx === plan.periods.length - 1;
+
+    var dots = plan.periods.map(function(x, i){
+      var cls = 'period-dot' + (x.done ? ' done' : (p === x ? ' now' : ''));
+      return '<span class="' + cls + '" title="' + esc('Period ' + (i + 1) + ' · ' + x.pages + ' pages · ' + x.minutes + ' min') + '">' +
+        (x.done ? I_CHECK : '') + (i + 1) + '<span style="opacity:.65">/' + x.pages + 'p</span></span>';
+    }).join('');
+
+    var stateText = over ? 'Over time' : (running ? 'Running' : (el > 0 ? 'Paused' : 'Ready'));
+    var stateCls = over ? ' over' : (running ? ' live' : '');
+
+    var actions = '';
+    if (running) {
+      actions += '<button class="btn ghost" data-t="pause" data-id="' + it.id + '">Pause</button>';
+    } else {
+      actions += '<button class="btn primary" data-t="start" data-id="' + it.id + '">' + (el > 0 ? 'Resume' : 'Start') + '</button>';
+    }
+    if (started) {
+      actions += '<button class="btn ' + (over ? 'primary' : 'ghost') + '" data-t="stop" data-id="' + it.id + '">' +
+        (isLast ? 'Stop &amp; finish' : 'Stop &amp; next period') + '</button>';
+    }
+    if (!started) {
+      actions += '<button class="btn ghost" data-t="replan" data-id="' + it.id + '">Change plan</button>';
+    }
+
+    var subText = over
+      ? 'Time is up — the timer keeps counting. Stop when you are ready to move on.'
+      : (running ? 'Counting down · ' + fmtMins(p.minutes) + ' planned'
+        : (el > 0 ? 'Paused at ' + clockText(el) : 'Ready when you are · ' + fmtMins(p.minutes) + ' planned'));
+
+    return '<article class="task stage-planned' + (over ? ' timer-over' : '') + '" style="--c:' + colour + '">' +
+      '<div class="task-main">' +
+        '<div class="task-line">' +
+          '<span class="chip">' + esc(it.sub) + '</span>' +
+          '<span class="flag ok">Plan set</span>' +
+          (running ? '<span class="flag warn">Timer on</span>' : '') +
+        '</div>' +
+        '<h3 class="task-name mono">' + esc(rvName(it)) + '</h3>' +
+        '<div class="task-sub">' + plan.pages + ' pages · ' + plan.periods.length + ' periods · ' +
+          fmtMins(plan.periods.reduce(function(a, x){ return a + x.minutes; }, 0)) + ' planned' +
+          (doneCount ? ' · ' + doneCount + ' done' : '') + '</div>' +
+      '</div>' +
+      '<div class="task-actions">' +
+        '<button class="icon-btn" data-act="edit" data-id="' + it.id + '" title="Edit" aria-label="Edit">' + I_EDIT + '</button>' +
+        '<button class="icon-btn" data-act="del" data-id="' + it.id + '" title="Delete" aria-label="Delete">' + I_TRASH + '</button>' +
+      '</div>' +
+      '<div class="timer-panel" data-id="' + it.id + '">' +
+        '<div class="period-dots">' + dots + '</div>' +
+        '<div class="timer-top">' +
+          '<span class="timer-label">Period ' + (idx + 1) + ' of ' + plan.periods.length + ' · ' + p.pages + ' pages</span>' +
+          '<span class="timer-state' + stateCls + '">' + stateText + '</span>' +
+        '</div>' +
+        '<div class="clock' + (over ? ' over' : '') + '" data-clock>' + clockText(left) + '</div>' +
+        '<div class="timer-sub">' + subText + '</div>' +
+        '<div class="bar' + (over ? ' over' : '') + '"><i data-bar style="width:' + Math.min(100, Math.round(el / totalMs * 100)) + '%"></i></div>' +
+        '<div class="timer-actions">' + actions + '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function startTimer(id){
+    var it = findById(state.rv, id);
+    if (!it || !it.plan) return;
+    var p = currentPeriod(it);
+    if (!p || p.startedAt) return;
+    ensureAudio();
+    p.startedAt = Date.now();
+    save();
+    render();
+  }
+
+  function pauseTimer(id){
+    var it = findById(state.rv, id);
+    if (!it || !it.plan) return;
+    var p = currentPeriod(it);
+    if (!p || !p.startedAt) return;
+    p.elapsed += Math.max(0, Date.now() - p.startedAt);
+    p.startedAt = null;
+    save();
+    render();
+  }
+
+  function stopTimer(id){
+    var it = findById(state.rv, id);
+    if (!it || !it.plan) return;
+    var p = currentPeriod(it);
+    if (!p) return;
+    var left = p.minutes * 60000 - elapsedOf(p);
+    if (p.startedAt && left > 60000) {
+      var idx = it.plan.periods.indexOf(p);
+      confirmSheet(
+        'Stop Period ' + (idx + 1) + ' early?',
+        'There are ' + clockText(left) + ' left on this period. Stopping now marks it done and moves you on.',
+        'Stop period',
+        function(){ finishPeriod(it, p); }
+      );
+      return;
+    }
+    finishPeriod(it, p);
+  }
+
+  function finishPeriod(it, p){
+    var idx = it.plan.periods.indexOf(p);
+    if (p.startedAt) {
+      p.elapsed += Math.max(0, Date.now() - p.startedAt);
+      p.startedAt = null;
+    }
+    p.done = true;
+    p.endedAt = Date.now();
+
+    var next = currentPeriod(it);
+    if (next) {
+      save();
+      render();
+      toast('Period ' + (idx + 1) + ' done · ' + clockText(elapsedOf(p)) + '. Period ' + (idx + 2) + ' is ready.');
+      return;
+    }
+
+    var snapshot = JSON.stringify(it.plan);
+    it.stage = 'archived';
+    it.archivedAt = Date.now();
+    save();
+    render();
+    toast('Revision filed — ' + fmtMins(studiedMs(it) / 60000) + ' studied. It is in History Record.', 'Undo', function(){
+      it.stage = 'planned';
+      it.archivedAt = null;
+      it.plan = JSON.parse(snapshot);
+      save();
+      render();
+    });
+  }
+
+  /* ================= timer tick + alert ================= */
+  var notified = {};
+  var audioCtx = null;
+
+  function ensureAudio(){
+    try {
+      if (!audioCtx) {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) { audioCtx = null; }
+  }
+
+  function beep(){
+    if (!audioCtx) return;
+    try {
+      var t0 = audioCtx.currentTime;
+      [0, 0.18, 0.36].forEach(function(off, i){
+        var o = audioCtx.createOscillator();
+        var g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = i === 2 ? 880 : 660;
+        g.gain.setValueAtTime(0, t0 + off);
+        g.gain.linearRampToValueAtTime(0.16, t0 + off + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + 0.2);
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start(t0 + off);
+        o.stop(t0 + off + 0.24);
+      });
+    } catch (e) {}
+  }
+
+  function flashCard(el){
+    if (!el) return;
+    el.classList.add('flash');
+    setTimeout(function(){ el.classList.remove('flash'); }, 1600);
+  }
+
+  function tick(){
+    var now = Date.now();
+    $$('.timer-panel[data-id]').forEach(function(panel){
+      var it = findById(state.rv, panel.getAttribute('data-id'));
+      if (!it || !it.plan) return;
+      var p = currentPeriod(it);
+      if (!p) return;
+
+      var el = elapsedOf(p, now);
+      var left = p.minutes * 60000 - el;
+      var over = left <= 0;
+      var idx = it.plan.periods.indexOf(p);
+
+      var clock = panel.querySelector('[data-clock]');
+      if (clock) {
+        clock.textContent = clockText(left);
+        clock.classList.toggle('over', over);
+      }
+      var bar = panel.querySelector('[data-bar]');
+      if (bar) bar.style.width = Math.min(100, (el / (p.minutes * 60000)) * 100) + '%';
+
+      var stateEl = panel.querySelector('.timer-state');
+      if (stateEl) {
+        stateEl.textContent = over ? 'Over time' : (p.startedAt ? 'Running' : (el > 0 ? 'Paused' : 'Ready'));
+        stateEl.className = 'timer-state' + (over ? ' over' : (p.startedAt ? ' live' : ''));
+      }
+      var art = panel.closest('.task');
+      if (art) {
+        art.classList.toggle('timer-over', over);
+        var barEl = art.querySelector('.bar');
+        if (barEl) barEl.classList.toggle('over', over);
+      }
+
+      if (over && p.startedAt) {
+        var key = it.id + ':' + idx;
+        if (!notified[key]) {
+          notified[key] = true;
+          beep();
+          flashCard(art);
+          toast('Time is up on Period ' + (idx + 1) + '. The timer keeps counting — stop when you are ready to move on.');
+        }
+      }
+    });
+    updateRunningBar(now);
+  }
+
+  function updateRunningBar(now){
+    var bar = $('#runningBar');
+    if (!bar) return;
+    var list = items('revise').filter(function(it){
+      if (!it.plan) return false;
+      var p = currentPeriod(it);
+      return !!(p && p.startedAt);
+    });
+    if (!list.length || (state.mode === 'revise' && state.view === 'day' && state.sel.revise === list[0].due)) {
+      bar.hidden = true;
+      return;
+    }
+    var it = list[0], p = currentPeriod(it);
+    var left = p.minutes * 60000 - elapsedOf(p, now);
+    bar.hidden = false;
+    bar.setAttribute('data-id', it.id);
+    $('#rbText').innerHTML = '<b>' + esc(rvName(it)) + '</b> · Period ' + (it.plan.periods.indexOf(p) + 1) +
+      ' · ' + clockText(left) + ' ' + (left <= 0 ? 'over' : 'left');
+  }
+
+  function renderRunningBar(){ updateRunningBar(Date.now()); }
 
   /* ================= toast ================= */
   var toastTimer = null;
@@ -1340,7 +1960,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
 
   function exportJSON(){
     var payload = {
-      app: 'Study Desk', version: '1.0', exportedAt: new Date().toISOString(),
+      app: 'Study Desk', version: '2.0', exportedAt: new Date().toISOString(),
       hw: state.hw, rv: state.rv
     };
     download('study-desk-backup-' + todayISO() + '.json', JSON.stringify(payload, null, 2), 'application/json');
@@ -1381,7 +2001,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
         mode === 'homework' ? 'Homework' : 'Revision',
         displayName(mode, it),
         mode === 'homework' ? it.subject : it.sub,
-        mode === 'homework' ? '' : 'Difficulty ' + it.diff + '; ID ' + it.ex,
+        mode === 'homework' ? '' : 'Difficulty ' + it.diff + '; ID ' + it.ex + (it.plan ? '; ' + it.plan.pages + ' pages; ' + Math.round(studiedMs(it) / 60000) + ' min studied' : ''),
         it.due,
         isoOf(f) + ' ' + pad(f.getHours()) + ':' + pad(f.getMinutes()),
         isoOf(d) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes())
@@ -1462,6 +2082,29 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
       else if (act === 'del') removeItem(id);
     });
 
+    $('#list').addEventListener('click', function(e){
+      var t = e.target.closest('[data-t]');
+      if (!t) return;
+      var id = t.getAttribute('data-id');
+      var kind = t.getAttribute('data-t');
+      if (kind === 'start') startTimer(id);
+      else if (kind === 'pause') pauseTimer(id);
+      else if (kind === 'stop') stopTimer(id);
+      else if (kind === 'replan') openPlanModal(id);
+    });
+
+    $('#rbGo').addEventListener('click', function(){
+      var id = $('#runningBar').getAttribute('data-id');
+      var it = id ? findById(state.rv, id) : null;
+      if (!it) return;
+      state.mode = 'revise';
+      state.view = 'day';
+      state.sel.revise = it.due;
+      state.calMonth = it.due.slice(0, 7);
+      state.q = '';
+      render();
+    });
+
     $('#historyList').addEventListener('click', function(e){
       var b = e.target.closest('[data-hact]');
       if (!b) return;
@@ -1517,6 +2160,8 @@ input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 
   load();
   wire();
   render();
+  setInterval(tick, 500);
+  tick();
 })();
 </script>
 </body>
